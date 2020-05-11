@@ -1,0 +1,64 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    pkg: "{{ package }}"
+
+  tasks:
+
+    - name: Install selected package from cli
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+        name: "{{ pkg }}"
+        state: present
+      register: apt
+      tags: install
+    - name: Debugging
+      debug: var=apt
+      tags: debug_in
+
+
+    - name: Remove selected package from cli
+      apt:
+        name: "{{ pkg }}"
+        state: absent
+      register: apt
+      tags: remove
+    - name: Debugging
+      debug: var=apt
+      tags: debug_rm
+
+
+    - name: Autoremove packages from cli
+      apt:
+        autoremove: yes
+      register: apt
+      tags: autoremove
+    - name: Debugging
+      debug: msg={{ apt.stdout.split('\n')[:-1] }}
+      tags: debug_arm
+
+
+    - name: Autoclean pakages cache from cli
+      apt:
+        autoclean: yes
+      register: apt
+      tags: autoclean
+    - name: Debugging
+      debug: msg={{ apt.stdout.split('\n')[:-1] }}
+      tags: debug_acl
+
+
+    - name: Upgrade ALL package from cli
+      apt:
+        name: "*"
+        force_apt_get: yes   ####  Use force_apt_get, because dont work with aptitude in debian 10+  ####
+        update_cache: yes
+        state: latest
+      register: apt
+      tags: upgrade
+    - name: Debugging
+      debug: var=apt
+      tags: debug_upg
+ 

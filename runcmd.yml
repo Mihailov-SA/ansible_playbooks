@@ -1,0 +1,13 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    cmd: "{{ cmd }}"
+  
+  tasks:
+    - name: Run command
+      command: "{{ cmd }}"
+      register: out
+
+    - debug: var=out.stdout_lines
+    - debug: var=out.stderr_lines
